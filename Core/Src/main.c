@@ -101,8 +101,25 @@ void cdc_task (void)
 
 size_t board_get_unique_id (uint8_t id[], size_t max_len)
 {
-  memcpy (id, "00000012", 8);
-  return 12;
+  volatile uint32_t *stm32_uuid = (volatile uint32_t *)UID_BASE;
+  //memcpy (id, "00000012", 8);
+  id[0] = stm32_uuid[0];
+  id[1] = stm32_uuid[1];
+  id[2] = stm32_uuid[2];
+  id[3] = stm32_uuid[3];
+  id[4] = stm32_uuid[4];
+  id[5] = stm32_uuid[5];
+  id[6] = stm32_uuid[6];
+  id[7] = stm32_uuid[7];
+  id[8] = stm32_uuid[8];
+  id[9] = stm32_uuid[9];
+  id[10] = stm32_uuid[10];
+  id[11] = stm32_uuid[11];
+  id[12] = 0;
+  id[13] = 0;
+  id[14] = 0;
+  id[15] = 0;
+  return 16;
 }
 
 /* USER CODE END 0 */
