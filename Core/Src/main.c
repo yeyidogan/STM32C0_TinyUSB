@@ -101,7 +101,7 @@ void cdc_task (void)
 
 size_t board_get_unique_id (uint8_t id[], size_t max_len)
 {
-  volatile uint32_t *stm32_uuid = (volatile uint32_t *)UID_BASE;
+  volatile uint32_t *stm32_uuid = (volatile uint32_t*) UID_BASE;
   //memcpy (id, "00000012", 8);
   id[0] = stm32_uuid[0];
   id[1] = stm32_uuid[1];
@@ -122,6 +122,14 @@ size_t board_get_unique_id (uint8_t id[], size_t max_len)
   return 16;
 }
 
+void tud_mount_cb (void)
+{
+  HAL_GPIO_WritePin (LED_C_GPIO_Port, LED_C_Pin, GPIO_PIN_SET);
+}
+void tud_umount_cb (void)
+{
+  HAL_GPIO_WritePin (LED_C_GPIO_Port, LED_C_Pin, GPIO_PIN_RESET);
+}
 /* USER CODE END 0 */
 
 /**
@@ -132,7 +140,7 @@ int main (void)
 {
 
   /* USER CODE BEGIN 1 */
-
+uint32_t main_cnt = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -260,12 +268,24 @@ static void MX_USB_PCD_Init (void)
  */
 static void MX_GPIO_Init (void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = { 0 };
   /* USER CODE BEGIN MX_GPIO_Init_1 */
 
   /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin (GPIOF, LED_C_Pin | LED_A_Pin | LED_B_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : LED_C_Pin LED_A_Pin LED_B_Pin */
+  GPIO_InitStruct.Pin = LED_C_Pin | LED_A_Pin | LED_B_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init (GPIOF, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
